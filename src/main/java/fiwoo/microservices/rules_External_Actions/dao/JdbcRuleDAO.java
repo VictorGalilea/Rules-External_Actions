@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import fiwoo.microservices.rules_External_Actions.model.RuleDB;
@@ -16,7 +19,7 @@ public class JdbcRuleDAO implements RuleDBDAO{
 		this.dataSource = dataSource;
 	}
 	
-	public void insert(RuleDB rule) {
+	public String insert(RuleDB rule) {
 		String sql = "INSERT INTO perseo_rules" +
 				"(RULE_ID, USER_ID, RULE_NAME, RULE_DESCRIPTION, RULE, ORION_ID) "
 				+ "VALUES (?,?,?,?,?,?)";
@@ -34,10 +37,9 @@ public class JdbcRuleDAO implements RuleDBDAO{
 			ps.setString(6, rule.getOrion_id());
 			ps.executeUpdate();
 			ps.close();
-			System.out.println("Inserted!");
+			return "{\"201\":\"created\"}";
 		} catch (SQLException e) {
-			throw new RuntimeException(e);
-
+			return "{\""+ e.getErrorCode() + "\":" + "\"" +e.getMessage()+ "\"}";
 		} finally {
 			if (conn != null) {
 				try {
@@ -47,19 +49,19 @@ public class JdbcRuleDAO implements RuleDBDAO{
 		}
 	}
 	
-	public RuleDB findByUser(String user_id) {
+	public List<RuleDB> findByUser(String user_id) {
 
 		String sql = "SELECT * FROM perseo_rules WHERE USER_ID = ?";
 
 		Connection conn = null;
-
+		List<RuleDB> rules = new ArrayList<RuleDB>();
 		try {
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, user_id);
 			RuleDB rule = null;
 			ResultSet rs = ps.executeQuery();
-			if (rs.next()) {
+			while (rs.next()) {
 				rule = new RuleDB(
 					rs.getString("RULE_ID"),
 					rs.getString("USER_ID"),
@@ -68,10 +70,11 @@ public class JdbcRuleDAO implements RuleDBDAO{
 					rs.getString("RULE"),
 					rs.getString("ORION_ID")
 				);
+				rules.add(rule);
 			}
 			rs.close();
 			ps.close();
-			return rule;
+			return rules;
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -110,8 +113,8 @@ public class JdbcRuleDAO implements RuleDBDAO{
 	}
 
 	@Override
-	public boolean existsRule(String rule_id) {
-		String sql = "SELECT * FROM perseo_rules WHERE RULE_ID = ?";
+	public boolean existsRule(String rule_id, String user_id) {
+		String sql = "SELECT * FROM perseo_rules WHERE RULE_ID = ? and USER_ID = ?";
 
 		Connection conn = null;
 
@@ -119,6 +122,7 @@ public class JdbcRuleDAO implements RuleDBDAO{
 			conn = dataSource.getConnection();
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ps.setString(1, rule_id);
+			ps.setString(2, user_id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				rs.close();
@@ -149,7 +153,6 @@ public class JdbcRuleDAO implements RuleDBDAO{
 				conn = dataSource.getConnection();
 				PreparedStatement ps = conn.prepareStatement(sql);
 				ps.setString(1, rule_id);
-				RuleDB rule = null;
 				ResultSet rs = ps.executeQuery();
 				if (rs.next()) {
 					String id = rs.getString("ORION_ID");

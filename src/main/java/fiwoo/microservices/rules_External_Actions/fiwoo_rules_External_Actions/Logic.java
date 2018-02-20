@@ -37,7 +37,7 @@ public class Logic {
 	private static final String DEFAULT_FIWARE_SERVICE ="unknownT" ;
 	private static final String DEFAULT_SERVICE_PATH ="/";
 	
-	// Context info to connect to data base.
+	// Context info to connect to database.
 	private static ApplicationContext context;
 	private static RuleDBDAO ruleDAO;
 
@@ -85,73 +85,9 @@ public class Logic {
 		ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
 	    RuleDBDAO ruleDAO = (RuleDBDAO) context.getBean("ruleDBDAO");
 	}
-	
-	public String getOrion_host() {
-		return orion_host;
-	}
-
-	public void setOrion_host(String orion_host) {
-		this.orion_host = orion_host;
-	}
-
-	public String getOrion_port() {
-		return orion_port;
-	}
-
-	public void setOrion_port(String orion_port) {
-		this.orion_port = orion_port;
-	}
-
-	public String getPerseo_host() {
-		return perseo_host;
-	}
-
-	public void setPerseo_host(String perseo_host) {
-		this.perseo_host = perseo_host;
-	}
-
-	public String getPerseo_port() {
-		return perseo_port;
-	}
-
-	public void setPerseo_port(String perseo_port) {
-		this.perseo_port = perseo_port;
-	}
-
-	public String getFiware_service() {
-		return fiware_service;
-	}
-
-	public void setFiware_service(String fiware_service) {
-		this.fiware_service = fiware_service;
-	}
-
-	public String getFiware_servicePath() {
-		return fiware_servicePath;
-	}
-
-	public void setFiware_servicePath(String fiware_servicePath) {
-		this.fiware_servicePath = fiware_servicePath;
-	}
-	
-	public static ApplicationContext getContext() {
-		return context;
-	}
-
-	public static void setContext(ApplicationContext context) {
-		Logic.context = context;
-	}
-
-	public static RuleDBDAO getRuleDAO() {
-		return ruleDAO;
-	}
-
-	public static void setRuleDAO(RuleDBDAO ruleDAO) {
-		Logic.ruleDAO = ruleDAO;
-	}
 
 	public String parseAdvancedRule(String ruleJson, String user_id) {
-		String result = "";
+		String result = "{";
 		Gson gson = new Gson();
 		gson.serializeNulls();
 		Object rule = gson.fromJson(ruleJson, Object.class);
@@ -186,7 +122,6 @@ public class Logic {
 		String[] typeSplit = text.split("type=\"");
 		String type = typeSplit[1].substring(0, typeSplit[1].indexOf("\""));
 		
-		
 		//change name of the rule to match user_ruleName
 		ruleJson = changeRuleName(ruleJson, user_id, oldName);
 		
@@ -200,20 +135,18 @@ public class Logic {
 		if (subscriptionResultMap.get("subscribeError") == null) {
 			// No error
 			subscriptionId = ((LinkedTreeMap<Object, Object>)subscriptionResultMap.get("subscribeResponse")).get("subscriptionId").toString();
-			result = subscriptionResultMap.toString();
+			result += "\"subscription\" : " + subscription_result + ", \n";
 		} else {
 			// Error
-			return subscriptionResultMap.toString();
+			return subscription_result;
 		}
-		
-		
 		
 		// Send Rule
 		String rule_result = sendRule(ruleJson);
 		LinkedTreeMap<Object, Object> ruleResultMap = (LinkedTreeMap<Object, Object>) gson.fromJson(rule_result, Object.class);
 		if (ruleResultMap.get("error") == null) {
-			// no hay error
-			result += "\n rule created :)";
+			// no error
+			result += "\"perseo\":" + rule_result + ", \n";
 		} else
 		{
 			// delete created subscription
@@ -222,16 +155,22 @@ public class Logic {
 		}
 		
 		// Everything ok. Store in database and return result
-		ruleDAO.insert(new RuleDB(createRuleId(user_id, oldName), user_id, oldName, "No description", ruleJson, subscriptionId));
+		String resultDB = ruleDAO.insert(new RuleDB(createRuleId(user_id, oldName), user_id, oldName, "No description", ruleJson, subscriptionId));
 		
-		// Store the id of the rule
-		//else: return error in rule, delete subscription if it was created.
-		return result;
+		if (resultDB.equals("{\"201\":\"created\"}"))
+			result += "\"database\":" + resultDB +"}";
+		else {
+			// Error storing in DB delete rule and subscription
+			deleteSubscription(subscriptionId);
+			deleteRuleInPerseo(createRuleId(user_id, oldName));
+		}
 		
+		return resultDB;
 	}
 	
 	public boolean existsRule(String rule_name, String user_id) {
-		return ruleDAO.existsRule(createRuleId(user_id,rule_name));
+		// check that rule exists and was created by that user
+		return ruleDAO.existsRule(createRuleId(user_id,rule_name),user_id);
 	}
 	
 	public String createRuleId(String user_id, String rule_name) {
@@ -394,7 +333,7 @@ public class Logic {
 		    BufferedReader br=null;
 		    if (200 <= responseCode && responseCode <= 299 ) {
 		    	br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-		    	sb.append("Deleted subscription with id "+ subscriptionId);
+		    	sb.append("{\"deleted subscription\":\""+ subscriptionId + "\"}");
 		    } else
 		    	br = new BufferedReader(new InputStreamReader(conn.getErrorStream(), "utf-8"));	
 	        String line = null;  
@@ -407,13 +346,13 @@ public class Logic {
 	
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
-			return "Error Deleting subscription with id "+ subscriptionId;
+			return "{\"error deleting subscription\":\""+ subscriptionId + "\"}";
 		} catch (ProtocolException e1) {
 			e1.printStackTrace();
-			return "Error Deleting subscription with id "+ subscriptionId;
+			return "{\"error deleting subscription\":\"" + subscriptionId + "\"}";
 		} catch (IOException e1) {
 			e1.printStackTrace();
-			return "Error Deleting subscription with id "+ subscriptionId;
+			return "{\"error deleting subscription\":\"" + subscriptionId + "\"}";
 		}	
 	}
 	
@@ -421,23 +360,28 @@ public class Logic {
 		String rule_id = createRuleId(user_id, rule_name);
 		
 		// Check that rule exists
-		if (!existsRule(rule_name, user_id)) return "Rule doesn't exist.";
+		if (!existsRule(rule_name, user_id)) return "{\"error\" : \"Rule does not exist\"}";
 		
 		StringBuilder result = new StringBuilder();
+		result.append("{");
 		// delete rule from perseo
+		result.append("\"perseo\":");
 		result.append(deleteRuleInPerseo(rule_id));
-		
+		result.append(",");
 		String subscription_id = ruleDAO.getSubscriptionId(rule_id);
 		//delete subscription in Orion
-		result.append(deleteSubscription(subscription_id) + "\n");
-		
+		result.append("\"subscription\":");
+		result.append(deleteSubscription(subscription_id));
+		result.append(",");
+
 		// If everything OK --> delete from database
 		
 		int rs = ruleDAO.delete(rule_id, user_id);
+		result.append("\"database\":");
+		result.append("{\"Deleted rows\":\" "+ rs+"\"}");
 		
-		result.append("Rows Deleted from DB: "+ rs);
-		
-		return result.toString();		
+		result.append("}");
+		return result.toString();
 	}
 	
 	public String deleteRuleInPerseo(String rule_id) {
@@ -543,5 +487,77 @@ public class Logic {
             e.printStackTrace();
         } 
         return sb.toString();
+	}
+	
+	public String getRulesOfUser(String user_id) {
+		Gson gson = new GsonBuilder().serializeNulls().create();
+		gson.serializeNulls();
+		List<RuleDB> rules = ruleDAO.findByUser(user_id);
+		String jsonRules =  gson.toJson(rules, Object.class);
+		return jsonRules;
+	}
+	
+	public String getOrion_host() {
+		return orion_host;
+	}
+
+	public void setOrion_host(String orion_host) {
+		this.orion_host = orion_host;
+	}
+
+	public String getOrion_port() {
+		return orion_port;
+	}
+
+	public void setOrion_port(String orion_port) {
+		this.orion_port = orion_port;
+	}
+
+	public String getPerseo_host() {
+		return perseo_host;
+	}
+
+	public void setPerseo_host(String perseo_host) {
+		this.perseo_host = perseo_host;
+	}
+
+	public String getPerseo_port() {
+		return perseo_port;
+	}
+
+	public void setPerseo_port(String perseo_port) {
+		this.perseo_port = perseo_port;
+	}
+
+	public String getFiware_service() {
+		return fiware_service;
+	}
+
+	public void setFiware_service(String fiware_service) {
+		this.fiware_service = fiware_service;
+	}
+
+	public String getFiware_servicePath() {
+		return fiware_servicePath;
+	}
+
+	public void setFiware_servicePath(String fiware_servicePath) {
+		this.fiware_servicePath = fiware_servicePath;
+	}
+	
+	public static ApplicationContext getContext() {
+		return context;
+	}
+
+	public static void setContext(ApplicationContext context) {
+		Logic.context = context;
+	}
+
+	public static RuleDBDAO getRuleDAO() {
+		return ruleDAO;
+	}
+
+	public static void setRuleDAO(RuleDBDAO ruleDAO) {
+		Logic.ruleDAO = ruleDAO;
 	}
 }

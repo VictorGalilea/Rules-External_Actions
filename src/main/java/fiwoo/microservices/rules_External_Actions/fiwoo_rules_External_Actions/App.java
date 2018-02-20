@@ -40,12 +40,37 @@ public class App
        		"        }\n" + 
        		"    }\n" + 
        		"}";
+       String rule2 = "{\n" + 
+          		"    \"name\": \"blood_rule_update2\",\n" + 
+          		"    \"text\": \"select *,\\\"blood_rule_update2\\\" as ruleName from pattern [every ev=iotEvent(cast(cast(BloodPressure?,String),float)>1.5 and type=\\\"BloodMeter\\\" )]\",\n" + 
+          		"    \"action\": {\n" + 
+          		"        \"type\": \"update\",\n" + 
+          		"        \"parameters\": {\n" + 
+          		"			 \"id\": \"bloodm1\", \n"+
+          		"			 \"type\": \"BloodMeter\", \n"+
+          		"            \"attributes\": [\n" + 
+          		"                {\n" + 
+          		"                    \"name\": \"abnormal\",\n" + 
+          		"                    \"value\": \"true\",\n" + 
+          		"                    \"type\": \"boolean\"\n" + 
+          		"                },\n" + 
+          		"                {\n" + 
+          		"                    \"name\": \"other\",\n" + 
+          		"                    \"value\": 1.34,\n" + 
+          		"                    \"type\": \"Number\"\n" + 
+          		"                }\n" + 
+          		"            ]\n" + 
+          		"        }\n" + 
+          		"    }\n" + 
+          		"}";
        Logic logic = new Logic();
        
        //logic.sendRule(rule);
-       System.out.println(logic.parseAdvancedRule(rule, "user1"));
-       
-       System.out.println(logic.deleteRuleAndSubscription("user1", "blood_rule_update"));
+       //System.out.println(logic.parseAdvancedRule(rule, "user1"));
+      //System.out.println(logic.parseAdvancedRule(rule2, "user1"));
+
+      //System.out.println(logic.deleteRuleAndSubscription("user1", "blood_rule_update2"));
+       //System.out.println(logic.getRulesOfUser("user1"));
        
 //       logic.changeRuleName(rule, "user", "blood_rule_update");
 //       
