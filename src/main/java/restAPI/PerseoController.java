@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.internal.LinkedTreeMap;
 
 import fiwoo.microservices.rules_External_Actions.fiwoo_rules_External_Actions.Logic;
+import io.swagger.annotations.BasicAuthDefinition;
 
 
 @RestController
@@ -27,7 +28,7 @@ public class PerseoController {
 	}
 	
 	// Get Methods
-	@RequestMapping(method = RequestMethod.GET, value = "/rules/statements/{user_id}", headers="Accept=application/json")
+	@RequestMapping(method = RequestMethod.GET, value = "/statements/{user_id}", headers="Accept=application/json")
 	public String getRules(@PathVariable("user_id") String user_id) {
 		return logic.getRulesOfUser(user_id);
 	}	
@@ -39,7 +40,7 @@ public class PerseoController {
 	 * 	 "rule" : {rule_JSON} }	* 
 	 * 
 	 */
-	@RequestMapping(value = "/rules/statements/advanced/add", method = RequestMethod.POST, headers="Accept=application/json", consumes = {"application/json"})
+	@RequestMapping(value = "/statements/advanced/add", method = RequestMethod.POST, headers="Accept=application/json", consumes = {"application/json"})
 	@ResponseBody
 	public ResponseEntity addRule(@RequestBody String body) {
 		Gson gson = new GsonBuilder().serializeNulls().create();
@@ -89,7 +90,7 @@ public class PerseoController {
 //	}
 	
 	// Delete Methods 
-	@RequestMapping(value = "/rules/statements/{user_id}", method = RequestMethod.DELETE, headers= {"Accept=application/json"})
+	@RequestMapping(value = "/statements/{user_id}", method = RequestMethod.DELETE, headers= {"Accept=application/json"})
 	@ResponseBody
 	public ResponseEntity deleteRule(@PathVariable("user_id") String user_id,  @RequestParam("rule_id") String rule_id) {
 		String response = logic.deleteRuleAndSubscription(user_id, rule_id);

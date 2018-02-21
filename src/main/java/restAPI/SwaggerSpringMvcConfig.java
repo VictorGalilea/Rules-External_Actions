@@ -6,8 +6,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
 import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -46,6 +48,8 @@ public class SwaggerSpringMvcConfig {
                 .title("Rules Microservice")
                 .version("1.0")
                 .license("Apache License Version 2.0")
+                .description("This is the API and the model definition for the "
+                		+ "FIWOO'S microservice of Rules.")
                 .build();
     }
 
@@ -56,6 +60,7 @@ public class SwaggerSpringMvcConfig {
      * @return the predicate
      */
     private Predicate<String> userPaths() {
-        return regex("/rules/.*");
+        //return regex("/.*");
+    	return Predicates.not(PathSelectors.regex("/error"));
     }
 }

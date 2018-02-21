@@ -52,21 +52,32 @@ public class Logic {
 	public Logic() {
 		// Initialize Variables
 		
-		// set perseo host and port
+		// set From Environment
+		perseo_host=System.getenv("PERSEO_HOST");
+		perseo_port=System.getenv("PERSEO_PORT");
+		fiware_service=System.getenv("PERSEO_HOST");
+		fiware_servicePath=System.getenv("PERSEO_HOST");
+		orion_host=System.getenv("PERSEO_HOST");
+		orion_port=System.getenv("PERSEO_HOST");
+		
+		// If null use default
 		if (perseo_host == null || perseo_host.isEmpty())
 			perseo_host = DEFAULT_PERSEO_HOST;
 		if (perseo_port == null || perseo_port.isEmpty())
 			perseo_port = DEFAULT_PERSEO_PORT;
+		if (fiware_service == null || fiware_service.isEmpty())
+			fiware_service = DEFAULT_FIWARE_SERVICE;
+		if (fiware_service == null || fiware_service.isEmpty())
+			fiware_service = DEFAULT_FIWARE_SERVICE;
+		if (orion_host == null || orion_host.isEmpty())
+			orion_host = DEFAULT_ORION_HOST;
+		if (orion_port == null || orion_port.isEmpty())
+			orion_port = DEFAULT_ORION_PORT;
 		
-		//set orion host, port and services
-		fiware_service = DEFAULT_FIWARE_SERVICE;
-		fiware_servicePath = DEFAULT_SERVICE_PATH;
-		orion_host = DEFAULT_ORION_HOST;
-		orion_port = DEFAULT_ORION_PORT;
-		// Check connections to perseo and orion
-		
+		//TODO: Check connections to perseo and orion
 		ApplicationContext context = new ClassPathXmlApplicationContext("Spring-Module.xml");
 	    ruleDAO = (RuleDBDAO) context.getBean("ruleDBDAO");
+	    ruleDAO.createTable();
 	}
 	
 	public Logic(String orion_host, String orion_port, String perseo_host, String perseo_port, String fiware_service,

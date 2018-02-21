@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,5 +173,27 @@ public class JdbcRuleDAO implements RuleDBDAO{
 					} catch (SQLException e) {}
 				}
 			}
+	}
+	
+	@Override
+	public void createTable() {
+		Connection conn = null;
+	    String sqlCreate = "CREATE TABLE IF NOT EXISTS perseo_rules"
+	            + "( RULE_ID varchar(100) NOT NULL,"
+	            + " USER_ID varchar(100) NOT NULL,"
+	            + " RULE_NAME varchar(100),"
+	            + " RULE_DESCRIPTION varchar(100),"
+	            + " RULE varchar(5000) NOT NULL,"
+	            + " ORION_ID varchar(100) NOT NULL,"
+	            + " PRIMARY KEY (RULE_ID))";
+	    
+		try {
+			conn = dataSource.getConnection();
+		    Statement stmt;
+			stmt = conn.createStatement();
+		    stmt.execute(sqlCreate);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }

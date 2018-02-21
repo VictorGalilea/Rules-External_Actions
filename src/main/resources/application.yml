@@ -1,5 +1,0 @@
-
-# HTTP Server
-server:
-  port: 4444   # HTTP (Tomcat) port
-

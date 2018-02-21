@@ -8,6 +8,7 @@ import fiwoo.microservices.rules_External_Actions.model.RuleDB;
 
 public interface RuleDBDAO{
 
+	public void createTable() ;
 	public String insert(RuleDB rule);
 	public List<RuleDB> findByUser(String user_id);
 	public int delete(String rule_id, String user_id);

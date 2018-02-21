@@ -1,6 +1,7 @@
 package fiwoo.microservices.rules_External_Actions.fiwoo_rules_External_Actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
@@ -63,7 +64,8 @@ public class App
           		"        }\n" + 
           		"    }\n" + 
           		"}";
-       Logic logic = new Logic();
+       //Logic logic = new Logic();
+
        
        //logic.sendRule(rule);
        //System.out.println(logic.parseAdvancedRule(rule, "user1"));
