@@ -67,8 +67,8 @@ public class Logic {
 			perseo_port = DEFAULT_PERSEO_PORT;
 		if (fiware_service == null || fiware_service.isEmpty())
 			fiware_service = DEFAULT_FIWARE_SERVICE;
-		if (fiware_service == null || fiware_service.isEmpty())
-			fiware_service = DEFAULT_FIWARE_SERVICE;
+		if (fiware_servicePath == null || fiware_servicePath.isEmpty())
+			fiware_servicePath = DEFAULT_SERVICE_PATH;
 		if (orion_host == null || orion_host.isEmpty())
 			orion_host = DEFAULT_ORION_HOST;
 		if (orion_port == null || orion_port.isEmpty())
@@ -106,10 +106,12 @@ public class Logic {
 		
 		// Check if Rule exist
 		String oldName = ruleMap.get("name").toString();
-		if (existsRule(oldName, user_id)) return "Rule already exist.";
+		if (oldName == null) return "{\"error\":\"Rule must have a 'name' field \"}";
+		if (existsRule(oldName, user_id)) return "{\"error\":\"Rule already exists.\"}";
 		
 		// Parse Rule to extract an orion subscription
 		String text = ruleMap.get("text").toString();
+		if (text == null) return "{\"error\":\"Rule must have a 'text' field \"}";
 		//I have to extract from here: Entity Type + attributes + Entity id if it exist
 		//   "text": "select *,\"blood_rule_update\" as ruleName from pattern 
 		//[every ev=iotEvent(cast(cast(BloodPressure?,String),float)>1.5 and type=\"BloodMeter\" and cast(id?,String)=\"bloodm1\")]",

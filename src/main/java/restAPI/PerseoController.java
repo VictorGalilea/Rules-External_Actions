@@ -29,11 +29,11 @@ public class PerseoController {
 	
 	// Get Methods
 	@RequestMapping(method = RequestMethod.GET, value = "/statements/{user_id}", headers="Accept=application/json")
-	public String getRules(@PathVariable("user_id") String user_id) {
-		return logic.getRulesOfUser(user_id);
+	public ResponseEntity getRules(@PathVariable("user_id") String user_id) {
+		return ResponseEntity.status(HttpStatus.OK).body(logic.getRulesOfUser(user_id));
 	}	
 	
-	// Post Methods
+	// Post Method
 	/*
 	 * ENTRY JSON:
 	 * { "user_id": "user_id",
@@ -48,46 +48,18 @@ public class PerseoController {
 		Object body_aux = gson.fromJson(body, Object.class);
 		LinkedTreeMap<Object, Object> body_map = (LinkedTreeMap<Object, Object>) body_aux;
 		String ruleJson = gson.toJson(body_map.get("rule"),LinkedTreeMap.class);
-		String response = logic.parseAdvancedRule(ruleJson, body_map.get("user_id").toString());
+		if (ruleJson ==  null) 
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"A rule must be sent\"}");
+		String user_id =  body_map.get("user_id").toString();
+		if (user_id == null) 
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"A user_id must be sent\"}");
+		String response = logic.parseAdvancedRule(ruleJson, user_id);
 		System.out.println(response);
 		if (response.contains("\"201\":\"created\""))
 			return ResponseEntity.status(HttpStatus.CREATED).body(response);
 		else
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
-		
-//	@RequestMapping(value = "/rules/host", method = RequestMethod.POST, consumes = {"text/plain"})
-//	@ResponseBody
-//	public ResponseEntity setHost(@RequestBody String body) {
-//		String response = logic.setHost(body);
-//		String responseCode = response.substring(0, 3);
-//		if (responseCode.equals("201"))
-//			return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//		else
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); 
-//	}
-//	
-//	@RequestMapping(value = "/rules/service", method = RequestMethod.POST, consumes = {"text/plain"})
-//	@ResponseBody
-//	public ResponseEntity setService(@RequestBody String body) {
-//		String response = logic.setService(body);
-//		String responseCode = response.substring(0, 3);
-//		if (responseCode.equals("201"))
-//			return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//		else
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); 
-//	}
-//	
-//	@RequestMapping(value = "/rules/servicePath", method = RequestMethod.POST, consumes = {"text/plain"})
-//	@ResponseBody
-//	public ResponseEntity setServicePath(@RequestBody String body) {
-//		String response = logic.setServicePath(body);
-//		String responseCode = response.substring(0, 3);
-//		if (responseCode.equals("201"))
-//			return ResponseEntity.status(HttpStatus.CREATED).body(response);
-//		else
-//			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response); 
-//	}
 	
 	// Delete Methods 
 	@RequestMapping(value = "/statements/{user_id}", method = RequestMethod.DELETE, headers= {"Accept=application/json"})
