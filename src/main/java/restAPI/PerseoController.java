@@ -30,7 +30,8 @@ public class PerseoController {
 	// Get Methods
 	@RequestMapping(method = RequestMethod.GET, value = "/statements/{user_id}", headers="Accept=application/json")
 	public ResponseEntity getRules(@PathVariable("user_id") String user_id) {
-		return ResponseEntity.status(HttpStatus.OK).body(logic.getRulesOfUser(user_id));
+		String result = logic.getRulesOfUser(user_id); 
+		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}	
 	
 	// Post Method

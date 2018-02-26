@@ -118,7 +118,8 @@ public class Logic {
 		
 		// get all attributes
 		List<String> attributesToChange = new ArrayList<String>();
-		String[] splited = text.split("[?]");
+		String events = text.split("iotEvent")[1];
+		String[] splited = events.split("[\'?\']");
 		String id = ".*";
 		for (int i=0; i<splited.length-1;i++) {
 			String s = splited[i];
@@ -178,7 +179,7 @@ public class Logic {
 			deleteRuleInPerseo(createRuleId(user_id, oldName));
 		}
 		
-		return resultDB;
+		return result;
 	}
 	
 	public boolean existsRule(String rule_name, String user_id) {
@@ -244,7 +245,7 @@ public class Logic {
             os.close();
 
            
-          //displays what the POST request returns
+          //get what the POST request returns
 
           sb = new StringBuilder();
           int HttpResult = conn.getResponseCode(); 
