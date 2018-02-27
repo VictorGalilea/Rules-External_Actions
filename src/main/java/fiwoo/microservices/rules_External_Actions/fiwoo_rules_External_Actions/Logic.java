@@ -97,7 +97,7 @@ public class Logic {
 	    RuleDBDAO ruleDAO = (RuleDBDAO) context.getBean("ruleDBDAO");
 	}
 
-	public String parseAdvancedRule(String ruleJson, String user_id) {
+	public String parseAdvancedRule(String ruleJson, String user_id, String description) {
 		String result = "{";
 		Gson gson = new Gson();
 		gson.serializeNulls();
@@ -169,7 +169,7 @@ public class Logic {
 		}
 		
 		// Everything ok. Store in database and return result
-		String resultDB = ruleDAO.insert(new RuleDB(createRuleId(user_id, oldName), user_id, oldName, "No description", ruleJson, subscriptionId));
+		String resultDB = ruleDAO.insert(new RuleDB(createRuleId(user_id, oldName), user_id, oldName, description, ruleJson, subscriptionId));
 		
 		if (resultDB.equals("{\"201\":\"created\"}"))
 			result += "\"database\":" + resultDB +"}";

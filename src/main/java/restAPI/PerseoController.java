@@ -48,13 +48,16 @@ public class PerseoController {
 		gson.serializeNulls();
 		Object body_aux = gson.fromJson(body, Object.class);
 		LinkedTreeMap<Object, Object> body_map = (LinkedTreeMap<Object, Object>) body_aux;
-		String ruleJson = gson.toJson(body_map.get("rule"),LinkedTreeMap.class);
-		if (ruleJson ==  null) 
+		if (body_map.get("rule") ==  null) 
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"A rule must be sent\"}");
-		String user_id =  body_map.get("user_id").toString();
-		if (user_id == null) 
+		String ruleJson = gson.toJson(body_map.get("rule"),LinkedTreeMap.class);
+		if (body_map.get("user_id") == null) 
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("{\"error\":\"A user_id must be sent\"}");
-		String response = logic.parseAdvancedRule(ruleJson, user_id);
+		String user_id =  body_map.get("user_id").toString();
+		String description = "no description";
+		if (body_map.get("description") != null)
+			description = body_map.get("description").toString();
+		String response = logic.parseAdvancedRule(ruleJson, user_id, description);
 		System.out.println(response);
 		if (response.contains("\"201\":\"created\""))
 			return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -65,8 +68,8 @@ public class PerseoController {
 	// Delete Methods 
 	@RequestMapping(value = "/statements/{user_id}", method = RequestMethod.DELETE, headers= {"Accept=application/json"})
 	@ResponseBody
-	public ResponseEntity deleteRule(@PathVariable("user_id") String user_id,  @RequestParam("rule_id") String rule_id) {
-		String response = logic.deleteRuleAndSubscription(user_id, rule_id);
+	public ResponseEntity deleteRule(@PathVariable("user_id") String user_id,  @RequestParam("rule_name") String rule_name) {
+		String response = logic.deleteRuleAndSubscription(user_id, rule_name);
 		if (response.contains("\"error\" : \"Rule does not exist\""))
 			return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
 		else

@@ -136,7 +136,7 @@ public class LogicTest {
 			"        }\n" + 
 			"    }\n" + 
 			"}";
-		String result = logic.parseAdvancedRule(ruleJson, "user_id_test2");
+		String result = logic.parseAdvancedRule(ruleJson, "user_id_test2", "empty description");
 		LinkedTreeMap<Object, Object>resultMap = (LinkedTreeMap<Object, Object>) gson.fromJson(result, Object.class);
 		
 		String resultDelete = logic.deleteRuleAndSubscription("user_id_test2", "blood_rule_update2");
@@ -177,7 +177,7 @@ public class LogicTest {
 				"        }\n" + 
 				"    }\n" + 
 				"}";
-			String result = logic.parseAdvancedRule(wrongRuleJson, "user_id_test2");
+			String result = logic.parseAdvancedRule(wrongRuleJson, "user_id_test2", "no description");
 			LinkedTreeMap<Object, Object>resultMap = (LinkedTreeMap<Object, Object>) gson.fromJson(result, Object.class);
 			
 			// check that nothing was created. There is an error in statement.
