@@ -55,10 +55,10 @@ public class Logic {
 		// set From Environment
 		perseo_host=System.getenv("PERSEO_HOST");
 		perseo_port=System.getenv("PERSEO_PORT");
-		fiware_service=System.getenv("PERSEO_HOST");
-		fiware_servicePath=System.getenv("PERSEO_HOST");
-		orion_host=System.getenv("PERSEO_HOST");
-		orion_port=System.getenv("PERSEO_HOST");
+		fiware_service=System.getenv("FIWARE_SERVICE");
+		fiware_servicePath=System.getenv("FIWARE_SERVICEPATH");
+		orion_host=System.getenv("ORION_HOST");
+		orion_port=System.getenv("ORION_PORT");
 		
 		// If null use default
 		if (perseo_host == null || perseo_host.isEmpty())
