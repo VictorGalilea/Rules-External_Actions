@@ -31,7 +31,7 @@ In order to deploy this microservice using Docker, follow these steps:
 
 1. Download the docker image from Docker Hub
 
-	`docker pull fiwoo/fiwoo/rules-external_actions`
+	`docker pull fiwoo/rules-external_actions`
 
 2. Run the image. You have to inlude Environment Variables with the directions of Perseo, Orion and MySQL Server. Take into account that the microservice is started on port 4444.
 
