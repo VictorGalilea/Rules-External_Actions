@@ -280,7 +280,8 @@ public class Logic {
 	public OrionSubscription createOrionSubscription(String entityID, String entityType, List<String> attributes, String reference, String duration, String throttling) {
 		
 		List<Entity> entities = new ArrayList<Entity>();
-		entities.add(new Entity(entityType, true, entityID));
+		boolean isPattern = entityID.contains(".*");
+		entities.add(new Entity(entityType, isPattern, entityID));
 		if (reference == null || reference.isEmpty()) {
 			if (perseo_host == null || perseo_host.isEmpty())
 				perseo_host = DEFAULT_PERSEO_HOST;
