@@ -1,0 +1,501 @@
+{
+	"info": {
+		"name": "Rules",
+		"_postman_id": "e45e9fd7-f6c4-438a-a084-8444fbddb4af",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add rule - Temperature over 21",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b0c87b3d-7989-4461-823e-5424f98e1a42",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if subscription has been successful",
+							"pm.test(\"Subscription success\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"subscription\");",
+							"});",
+							"",
+							"// Check if response is 201 (created)",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Check if the rule name is contained in the response",
+							"pm.test(\"Rule name is contained in the response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ruleNameHigh\"));",
+							"});",
+							"",
+							"// Check if the rule pattern is contained in the response",
+							"pm.test(\"Rule pattern is contained in the response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"rulePatternHigh\"));",
+							"});",
+							"",
+							"// Check if error is null",
+							"pm.test(\"Error is null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.perseo.error) === null;",
+							"});",
+							"",
+							"// Check if the row has been created in the database",
+							"pm.test(\"Row has been created\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.database[\"201\"]).to.eql(\"created\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"rule\": {\n    \"name\": \"{{ruleNameHigh}}\",\n    \"text\": \"{{ruleTextHigh}}\",\n    \"action\": {\n        \"type\": \"update\",\n        \"parameters\": {\n        \"id\" : \"temp1\",\n        \"type\" : \"temperature_entity\",\n            \"attributes\": [\n                {\n                    \"name\": \"isHigh\",\n                    \"value\": \"true\",\n                    \"type\": \"boolean\"\n                }]\n        }\n    }\n},\n  \"user_id\": \"{{userId}}\",\n  \"description\": \"string\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/statements/advanced/add",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"advanced",
+						"add"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add rule - Temperature under 21",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ecaf759b-7966-4baa-be9f-9bab0565d461",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if subscription has been successful",
+							"pm.test(\"Subscription success\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"subscription\");",
+							"});",
+							"",
+							"// Check if response is 201 (created)",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Check if the rule name is contained in the response",
+							"pm.test(\"Rule name is contained in the response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ruleNameLow\"));",
+							"});",
+							"",
+							"// Check if the rule pattern is contained in the response",
+							"pm.test(\"Rule pattern is contained in the response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"rulePatternLow\"));",
+							"});",
+							"",
+							"// Check if error is null",
+							"pm.test(\"Error is null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.perseo.error) === null;",
+							"});",
+							"",
+							"// Check if the row has been created in the database",
+							"pm.test(\"Row has been created\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.database[\"201\"]).to.eql(\"created\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"rule\" : {\r\n    \"name\": \"{{ruleNameLow}}\",\r\n    \"text\": \"{{ruleTextLow}}\",\r\n    \"action\": {\r\n        \"type\": \"update\",\r\n        \"parameters\": {\r\n        \"id\" : \"temp1\",\r\n        \"type\" : \"temperature_entity\",\r\n            \"attributes\": [\r\n                {\r\n                    \"name\": \"isHigh\",\r\n                    \"value\": \"false\",\r\n                    \"type\": \"boolean\"\r\n                }]\r\n        }\r\n    }\r\n},\r\n\"user_id\" : \"{{userId}}\",\r\n\"description\" : \"Sets isHigh to false if temperature is lower than 21\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{url}}/statements/advanced/add",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"advanced",
+						"add"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add rule - Email notification on update high",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "929a2cbd-fd35-4318-b00b-61c5afa193ee",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if subscription has been successful",
+							"pm.test(\"Subscription success\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"subscription\");",
+							"});",
+							"",
+							"// Check if response is 201 (created)",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.response.to.have.status(201);",
+							"});",
+							"",
+							"// Check if the rule name is contained in the response",
+							"pm.test(\"Rule name is contained in the response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ruleNameEmail\"));",
+							"});",
+							"",
+							"// Check if the rule pattern is contained in the response",
+							"pm.test(\"Rule pattern is contained in the response\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"rulePatternEmail\"));",
+							"});",
+							"",
+							"// Check if error is null",
+							"pm.test(\"Error is null\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.perseo.error) === null;",
+							"});",
+							"",
+							"// Check if the row has been created in the database",
+							"pm.test(\"Row has been created\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.database[\"201\"]).to.eql(\"created\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"rule\" : {\n    \"name\": \"{{ruleNameEmail}}\",\n    \"text\": \"{{ruleTextEmail}}\",\n    \"action\":\n        {\n            \"type\": \"email\",\n            \"template\": \"Temperature is ${temperature}. Setting isHigh to true.\",\n            \"parameters\": {\n               \"to\": \"{{ruleToEmail}}\",\n                \"from\": \"{{ruleFromEmail}}\",\n                \"subject\": \"Temperature has changed\"\n            }\n        }\n},\n\"user_id\" : \"{{userId}}\",\n\"description\" : \"sends an email if temperature is greater than 21\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/statements/advanced/add",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"advanced",
+						"add"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Add rule - Error 500 empty rule",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0b57d037-7d56-4e97-aa03-9868f60d3475",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if response is 500 Internal Server error",
+							"pm.test(\"Status code is 500\", function () {",
+							"    pm.response.to.have.status(500);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"rule\": {},\n  \"user_id\": \"{{userId}}\",\n  \"description\": \"string\"\n}"
+				},
+				"url": {
+					"raw": "{{url}}/statements/advanced/add",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"advanced",
+						"add"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get rules by UserID",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9b680198-4b9a-48dd-add3-5b085766d079",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if rules have been created successfully for the userId",
+							"pm.test(\"Rule for high temperature has been created correctly\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ruleNameHigh\"));",
+							"});",
+							"",
+							"pm.test(\"Rule for low temperature has been created correctly\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ruleNameLow\"));",
+							"});",
+							"",
+							"pm.test(\"Rule for email notification has been created correctly\", function () {",
+							"    pm.expect(pm.response.text()).to.include(pm.environment.get(\"ruleNameEmail\"));",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/statements/{{userId}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"{{userId}}"
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete rule by UserID - Rule does not exist",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7ec6205e-b190-42e2-93da-aecbd569a576",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if response contains that the rule doesn't exist for the specific userId",
+							"pm.test(\"Rule does not exist\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"Rule does not exist\");",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/statements/{{userId}}?rule_name=non_existing_rule",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"{{userId}}"
+					],
+					"query": [
+						{
+							"key": "rule_name",
+							"value": "non_existing_rule",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete rule by UserID - Email notification",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bc91cee7-79da-4b76-a00d-b5f1af98a5f6",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if response contains subscription deletion",
+							"pm.test(\"Subscription has been deleted\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"deleted subscription\");",
+							"});",
+							"",
+							"// Check if the row has been deleted in the database",
+							"pm.test(\"Row has been deleted\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.database[\"Deleted rows\"]) == 1;",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/statements/{{userId}}?rule_name={{ruleNameEmail}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"{{userId}}"
+					],
+					"query": [
+						{
+							"key": "rule_name",
+							"value": "{{ruleNameEmail}}",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete rule by UserID - Temperature over 21",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d35f2857-4e9c-4e95-8d63-dc2ff05618fd",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if response contains subscription deletion",
+							"pm.test(\"Subscription has been deleted\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"deleted subscription\");",
+							"});",
+							"",
+							"// Check if the row has been deleted in the database",
+							"pm.test(\"Row has been deleted\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.database[\"Deleted rows\"]) == 1;",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/statements/{{userId}}?rule_name={{ruleNameHigh}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"{{userId}}"
+					],
+					"query": [
+						{
+							"key": "rule_name",
+							"value": "{{ruleNameHigh}}",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete rule by UserID - Temperature under 21",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0cd2ac30-0425-4e52-8efa-bf588dafc57c",
+						"type": "text/javascript",
+						"exec": [
+							"// Check if response contains subscription deletion",
+							"pm.test(\"Subscription has been deleted\", function () {",
+							"    pm.expect(pm.response.text()).to.include(\"deleted subscription\");",
+							"});",
+							"",
+							"// Check if the row has been deleted in the database",
+							"pm.test(\"Row has been deleted\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.database[\"Deleted rows\"]) == 1;",
+							"});",
+							"",
+							"// If anytime increasing userId after each run is required",
+							"//userID = +pm.environment.get(\"userId\");",
+							"//userID++;",
+							"//pm.environment.set(\"userId\", userID);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/statements/{{userId}}?rule_name={{ruleNameLow}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"statements",
+						"{{userId}}"
+					],
+					"query": [
+						{
+							"key": "rule_name",
+							"value": "{{ruleNameLow}}",
+							"equals": true
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
