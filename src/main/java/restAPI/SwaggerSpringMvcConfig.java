@@ -2,6 +2,8 @@ package restAPI;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -23,6 +25,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import javax.sql.DataSource;
 
 @Configuration
+@EnableEurekaClient
+@EnableDiscoveryClient
 @EnableSwagger2
 @ImportResource("classpath:Spring-Module.xml")
 public class SwaggerSpringMvcConfig {
