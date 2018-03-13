@@ -50,8 +50,9 @@ public class PerseoController {
 	      try {
 	         // Apertura del fichero y creacion de BufferedReader para poder
 	         // hacer una lectura comoda (disponer del metodo readLine()).
+	    	 String absolutePath=new File("").getAbsolutePath();
 	    	 SwaggerJson="";
-	         archivo = new File ("Rules-External_Actions\\src\\main\\resources\\Rules_perseo_Swagger_With_Tokens.json");
+	         archivo = new File (absolutePath+"\\src\\main\\resources\\Rules_perseo_Swagger_With_Tokens.json");
 	         fr = new FileReader (archivo);
 	         br = new BufferedReader(fr);
 
@@ -60,7 +61,7 @@ public class PerseoController {
 	         while((linea=br.readLine())!=null)
 	            SwaggerJson=SwaggerJson+"\n"+linea;
 	        	 //System.out.println(linea);
-	         System.out.println(SwaggerJson);
+	         //System.out.println(SwaggerJson);
 	      }
 	      catch(Exception e){
 	         e.printStackTrace();
@@ -110,7 +111,7 @@ public class PerseoController {
 		else
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
-	
+
 	// Delete Methods 
 	@RequestMapping(value = "/statements/{user_id}", method = RequestMethod.DELETE, headers= {"Accept=application/json"})
 	@ResponseBody
